@@ -2,11 +2,11 @@
 
 class Vendor_DineroMail_Object_Item extends Vendor_DineroMail_Object_Object{
 	
-	protected $_amount = '1212';
-	protected $_code = '12221';
+	protected $_amount = '';
+	protected $_code = '';
 	protected $_currency = Vendor_DineroMail_Service::CURRENCY_PESO_ARG;
-	protected $_description = 'ewewwe';
-	protected $_name = 'eee';
+	protected $_description = '';
+	protected $_name = '';
 	protected $_quantity = 1;
 	
 	protected $_gateway = null;

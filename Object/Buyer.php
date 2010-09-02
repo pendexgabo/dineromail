@@ -2,13 +2,13 @@
 
 class Vendor_DineroMail_Object_Buyer extends Vendor_DineroMail_Object_Object {
 
-	protected $_address = '12';
-	protected $_city = '12';
-	protected $_country = '121';
-	protected $_email = 'sss@ol.com';
-	protected $_lastname = 'dasdas';
-	protected $_name = 'asdsa';
-	protected $_phone = 'asdas';
+	protected $_address = '';
+	protected $_city = '';
+	protected $_country = '';
+	protected $_email = '';
+	protected $_lastname = '';
+	protected $_name = '';
+	protected $_phone = '';
 	
 	protected $_gateway = null;
 	
