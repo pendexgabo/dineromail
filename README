@@ -1,7 +1,0 @@
-v0.2.0
-- [DOC] added some php doc
-- [MINOR] fixed typos
-- [MINOR] moved constructor to abstract class for objects Buyer and Item
-
-v0.1.0
-- initial commit
