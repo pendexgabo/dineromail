@@ -26,16 +26,13 @@ This is a basic example to generate a payment coupon
     $item = new Vendor_DineroMail_Object_Item($gateway);
  
     $item->setAmount($amount);
-    $item->setCode("CS001");
-    $item->setDescription("Couta Social - Self Service");
-    $item->setName("Cuota Social");
+    $item->setCode("code");
+    $item->setDescription("Description");
+    $item->setName("Name");
     
     $buyer = new Vendor_DineroMail_Object_Buyer($gateway);
     
-    /*
-    * $buyerObject contains the buyer information
-    */
-    
+    // $buyerObject contains the buyer information
     $buyer->setEmail($buyerObject->get("email"));
     $buyer->setaddress($buyerObject->get("address"));
     $buyer->setName($buyerObject->get("name"));
@@ -43,13 +40,8 @@ This is a basic example to generate a payment coupon
     $buyer->setAddress($buyerObject->get("address"));
     
     
-    
-    
     try {
-    	/* 
-    	* call the service
-    	*/
-    	
+        // call the service
     	$ticketResult = $service->doPaymentWithReference(array($item), $buyer, $transactionId);
     }
     catch(Vendor_DineroMail_Exception $e) {
@@ -61,7 +53,7 @@ This is a basic example to generate a payment coupon
 
 ## License
 
-Copyright (c) 2010 Gabriel Sosa
+Copyright (c) 2012 Gabriel Sosa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

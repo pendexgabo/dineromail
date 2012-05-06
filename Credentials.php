@@ -1,27 +1,27 @@
 <?php
 
+/**
+ * Contains the credentials required by Vendor_DineroMail_Connection
+ *
+ * @see Vendor_DineroMail_Connection
+ */
 class Vendor_DineroMail_Credentials {
-	
-	
-	protected $APIUserName 	= '';
-	protected $APIPassword 	= '';
-	
-	
-	public function __construct($APIUserName, $APIPassword) {
-	
-	$this->APIUserName 	= $APIUserName;
-	$this->APIPassword 	= $APIPassword;
 
+	protected $_username 	= null;
+	protected $_password 	= null;
+	
+
+	public function __construct($username, $password) {
+		$this->_username 	= $username;
+		$this->_password 	= $password;
 	}
 	
 	public function getUserName() {
-		return $this->APIUserName;
+		return $this->_username;
 	}
 	
 	public function getPassword() {
-		return $this->APIPassword;
+		return $this->_password;
 	}
-	
-	
 
 }

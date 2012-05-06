@@ -1,8 +1,8 @@
 <?php
 
 abstract class Vendor_DineroMail_Gateway_Abstract {
-	protected $_nameSpace = "";
-	protected $_wdsl = "";
+	protected $_nameSpace 	= '';
+	protected $_wdsl 		= '';
 	
 	
 	public function getNameSpace() {
@@ -13,5 +13,4 @@ abstract class Vendor_DineroMail_Gateway_Abstract {
 		return $this->_wdsl;
 	}
 	
-
 }

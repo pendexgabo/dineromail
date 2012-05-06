@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Represents and contains all logic required to call the DineroMail
+ * service
+ *
+ * @see Vendor_DineroMail_Connection
+ */
 class Vendor_DineroMail_Service {
 
 	const PROVIDER_RAPIPAGO 		= "rapipago";
@@ -13,65 +19,86 @@ class Vendor_DineroMail_Service {
 	const CURRENCY_PESO_CHI			= "CLP";
 	const CURRENCY_USD				= "USD";
 
-
 	const RESULT_COMPLETED			= "COMPLETED";
 	const RESULT_ERROR				= "ERROR";
 
-
 	protected $_currency 			= self::CURRENCY_PESO_ARG;
-	protected $_provier				= self::PROVIDER_PAGOFACIL;
+	protected $_provider			= self::PROVIDER_PAGOFACIL;
 
 	protected $_connection			= null;
 	protected $_client				= null;
 
 
 	public function __construct(Vendor_DineroMail_Connection $connection) {
-
 		$this->_connection = $connection;
 		$this->setupClient();
+	}
 
+	public function setConnection(Vendor_DineroMail_Connection $connection) {
+		return $this->_connection = $connection;
 	}
 
 	public function getConnection() {
 		return $this->_connection;
 	}
 
-	public function setCurrency($cur) {
-		$this->_currency = $cur;
+	public function setCurrency($currency) {
+		$this->_currency = $currency;
 	}
 
 	public function getCurrency() {
 		return $this->_currency;
 	}
-
-
-	public function getProvier() {
-		return $this->_provier;
+	
+	public function setProvider($provider) {
+		return $this->_provider = $provider;
 	}
 
-
-
-	protected function setupClient() {
-
-		$this->_client = new SoapClient($this->getConnection()->getGateway()->getWdsl(), array('trace' => 1,'exceptions' => 1)); 	
+	public function getProvider() {
+		return $this->_provider;
 	}
 
 	protected function getClient() {
 		return $this->_client;
 	}
 
-	protected function credentialsObject() {
-
-		return new SOAPVar(array('APIUserName' => $this->getConnection()->getCredentials()->getUserName(),
-			'APIPassword'=> $this->getConnection()->getCredentials()->getPassword()),
-			SOAP_ENC_OBJECT,
-			'APICredential',
-			$this->getConnection()->getGateway()->getNameSpace());
+	/**
+	 * Setups the soap client object
+	 *
+	 * @return SoapClient the soap object
+	 */
+	protected function setupClient() {
+		$this->_client = new SoapClient($this->getConnection()->getGateway()->getWdsl(),
+										array('trace' => 1,
+											  'exceptions' => 1)); 	
 	}
 
+	/**
+	 * Returns the soap credential object
+	 *
+	 * @return SOAPVar the soap object
+	 */
+	protected function credentialsObject() {
 
+		$connection = $this->getConnection();
 
-	protected function call($function, $parameters) {
+		return new SOAPVar(array('APIUserName' => $connection->getCredentials()->getUserName(),
+								 'APIPassword'=> $connection->getCredentials()->getPassword()),
+						   SOAP_ENC_OBJECT,
+						   'APICredential',
+						   $connection->getGateway()->getNameSpace());
+	}
+
+	/**
+	 * makes the raw call to the service using the SoapClient
+	 * @see Vendor_DineroMail_Exception
+	 *
+	 * @param $function string function to call
+	 * @param $parameters array contains the parameters to send to the webservice
+	 * @return stdClass raw webservice response
+	 * @throws Vendor_DineroMail_Exception in case some error
+	 */
+	protected function call($function, array $parameters) {
 
 		try {
 			$response = $this->getClient()->$function($parameters);
@@ -82,9 +109,16 @@ class Vendor_DineroMail_Service {
 		}
 	}
 
-
+	/**
+	 * encapsulates the call to the DineroMail service invoking the method
+	 * doPaymentWithReference
+	 * @link https://api.dineromail.com/dmapi.asmx?WSDL
+	 *
+	 * @param array $items items to create the payment
+	 * @param Vendor_DineroMail_Object_Buyer $buyer contains the buyer information
+	 * @param string $transactionId an unique TX id
+	 */
 	public function doPaymentWithReference(array $items, Vendor_DineroMail_Object_Buyer $buyer, $transactionId) {
-
 
 		$messageId = $this->uniqueId();
 		$itemsChain = '';
@@ -95,21 +129,24 @@ class Vendor_DineroMail_Service {
 			$oitems[] = $item->asSoapObject();
 		}
 
-		$hash = $this->hash($transactionId, $messageId, $itemsChain, $buyer, $this->getProvier(), $this->getConnection()->getCredentials()->getPassword());
+		$hash = $this->hash($transactionId,
+							$messageId,
+							$itemsChain,
+							$buyer,
+							$this->getProvider(),
+							$this->getConnection()->getCredentials()->getPassword());
 
 
-
-
-		$request = array('Credential' => $this->credentialsObject()
-			,'Crypt' =>  false
-			,'MerchantTransactionId' => $transactionId
-			,'UniqueMessageId' => $messageId
-			,'Provider' => $this->getProvier()
-			,'Message' => ""
-			,'Subject' => ""
-			,'Items'=> $oitems
-			,'Buyer'=> $buyer->asSoapObject()
-			,'Hash' => $hash);	
+		$request = array('Credential' => $this->credentialsObject(),
+						 'Crypt' =>  false,
+						 'MerchantTransactionId' => $transactionId,
+						 'UniqueMessageId' => $messageId,
+						 'Provider' => $this->getProvider(),
+						 'Message' => '',
+						 'Subject' => '',
+						 'Items'=> $oitems,
+						 'Buyer'=> $buyer->asSoapObject(),
+						 'Hash' => $hash);	
 
 		$result = $this->call("DoPaymentWithReference", $request);
 
@@ -117,32 +154,27 @@ class Vendor_DineroMail_Service {
 
 	}
 
-
-
-
-
-	public function getPaymentTicket() {
-
-
-	}
-
-
-
+	/**
+	 * Returns an unique id for each service call
+	 *
+	 * @param void
+	 * @return string al sinple call to the microtime function
+	 */
 	protected function uniqueId() {
-		return time();
+
+		return (string) microtime();
 	}
 
-
+	/**
+	 * Returns a md5 hash of all given parameters
+	 *
+	 * @param 1..n parameters to hash
+	 * @return string containing the md5
+	 */
 	protected function hash(/* polimorphic */) {
+
 		$args = func_get_args();
 		return md5(implode("", $args));
 	}
 
-
-
-
 }
-
-
-
-?>

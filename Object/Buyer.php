@@ -1,21 +1,21 @@
 <?php
 
+/**
+ * Represents a Buyer object containing all the information related
+ * to the buyer which is going to do the purchase
+ * @see Vendor_DineroMail_Object_Object
+ */
 class Vendor_DineroMail_Object_Buyer extends Vendor_DineroMail_Object_Object {
 
-	protected $_address = '';
-	protected $_city = '';
-	protected $_country = '';
-	protected $_email = '';
-	protected $_lastname = '';
-	protected $_name = '';
-	protected $_phone = '';
+	protected $_address 	= '';
+	protected $_city 		= '';
+	protected $_country 	= '';
+	protected $_email 		= '';
+	protected $_lastName 	= '';
+	protected $_name 		= '';
+	protected $_phone 		= '';
 	
-	protected $_gateway = null;
-	
-	public function __construct(Vendor_DineroMail_Gateway_Abstract $gateway) {
-		$this->_gateway = $gateway;
-	}
-	
+
 	public function setAddress($address) {
 		$this->_address = $address;
 	}
@@ -32,8 +32,8 @@ class Vendor_DineroMail_Object_Buyer extends Vendor_DineroMail_Object_Object {
 		$this->_email = $email;
 	}
 	
-	public function setLastName($lastname) {
-		$this->_lastname = $lastname;
+	public function setLastName($lastName) {
+		$this->_lastName = $lastName;
 	}
 	
 	public function setName($name) {
@@ -44,21 +44,29 @@ class Vendor_DineroMail_Object_Buyer extends Vendor_DineroMail_Object_Object {
 		$this->_phone = $phone;
 	}	
 	
-	
 	public function asSoapObject() {
-		return new SOAPVar(array('Address' => $this->_address
-									,'City' => $this->_city
-									,'Country' => $this->_country
-									,'Email' => $this->_email
-									,'LastName' => $this->_lastname
-									,'Name' => $this->_name
-									,'Phone' => $this->_phone)
-									, SOAP_ENC_OBJECT, 'Buyer', $this->_gateway->getNameSpace());
+
+		return new SOAPVar(array('Address' => $this->_address,
+								 'City' => $this->_city,
+								 'Country' => $this->_country,
+								 'Email' => $this->_email,
+								 'LastName' => $this->_lastName,
+								 'Name' => $this->_name,
+								 'Phone' => $this->_phone),
+						   SOAP_ENC_OBJECT,
+						   'Buyer',
+						   $this->getGateway()->getNameSpace());
 	}
 	
 	public function __toString() {
 		
-		return $this->_name . $this->_lastname . $this->_email . $this->_address . $this->_phone . $this->_country . $this->_city;		
+		return $this->_name .
+			   $this->_lastName .
+			   $this->_email .
+			   $this->_address .
+			   $this->_phone .
+			   $this->_country .
+			   $this->_city;		
 	}
 
 }
